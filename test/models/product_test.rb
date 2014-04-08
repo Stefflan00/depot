@@ -2,10 +2,7 @@ require 'test_helper'
 
 class ProductTest < ActiveSupport::TestCase
   fixtures :products
-  # test "the truth" do
-  #   assert true
-  # end
-  
+    
   test "product is not valid without a uniqe title" do
     product = Product.new(:title => products(:ruby).title,
     :description => "yyy",
