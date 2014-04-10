@@ -1,12 +1,18 @@
 Depot::Application.routes.draw do
+  resources :orders
+
   resources :line_items
 
   resources :carts
 
   get "store/index"
   resources :products
-  
+
   root :to => 'store#index', :as => 'store'
+
+  resources :line_items do
+    put 'decrement', on: :member
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

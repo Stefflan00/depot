@@ -1,17 +1,17 @@
 #---
 # Excerpted from "Agile Web Development with Rails",
 # published by The Pragmatic Bookshelf.
-# Copyrights apply to this code. It may not be used to create training material, 
+# Copyrights apply to this code. It may not be used to create training material,
 # courses, books, articles, and the like. Contact us if you are in doubt.
-# We make no guarantees that this code is fit for any purpose. 
+# We make no guarantees that this code is fit for any purpose.
 # Visit http://www.pragmaticprogrammer.com/titles/rails4 for more book information.
 #---
 #---
 # Excerpted from "Agile Web Development with Rails, 4rd Ed.",
 # published by The Pragmatic Bookshelf.
-# Copyrights apply to this code. It may not be used to create training material, 
+# Copyrights apply to this code. It may not be used to create training material,
 # courses, books, articles, and the like. Contact us if you are in doubt.
-# We make no guarantees that this code is fit for any purpose. 
+# We make no guarantees that this code is fit for any purpose.
 # Visit http://www.pragmaticprogrammer.com/titles/rails4 for more book information.
 #---
 class LineItemsController < ApplicationController
@@ -22,10 +22,10 @@ class LineItemsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @line_items }
+      format.json  { render :json => @line_items }
     end
   end
-  
+
   def line_items_params
     params.require(:line_item).permit(:product_id)
   end
@@ -37,7 +37,7 @@ class LineItemsController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @line_item }
+      format.json  { render :json => @line_item }
     end
   end
 
@@ -48,7 +48,7 @@ class LineItemsController < ApplicationController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @line_item }
+      format.json  { render :json => @line_item }
     end
   end
 
@@ -66,12 +66,14 @@ class LineItemsController < ApplicationController
 
     respond_to do |format|
       if @line_item.save
-        format.html { redirect_to(@line_item.cart) }
-        format.xml  { render :xml => @line_item,
+        format.html { redirect_to store_url}
+        format.js {@current_item = @line_item}
+        format.json  { render :json => @line_item,
           :status => :created, :location => @line_item }
       else
         format.html { render :action => "new" }
-        format.xml  { render :xml => @line_item.errors,
+        format.js {@current_item = @line_item}
+        format.json  { render :json => @line_item.errors,
           :status => :unprocessable_entity }
       end
     end
@@ -85,13 +87,16 @@ class LineItemsController < ApplicationController
       respond_to do |format|
         if @line_item.update_attributes(params[:line_item])
           format.html { redirect_to(@line_item, :notice => 'Line item was successfully updated.') }
-          format.xml  { head :ok }
+          format.json  { head :ok }
         else
           format.html { render :action => "edit" }
-          format.xml  { render :xml => @line_item.errors, :status => :unprocessable_entity }
+          format.json  { render :json => @line_item.errors, :status => :unprocessable_entity }
         end
       end
     end
+
+
+
   # DELETE /line_items/1
   # DELETE /line_items/1.xml
   def destroy
@@ -99,8 +104,28 @@ class LineItemsController < ApplicationController
     @line_item.destroy
 
     respond_to do |format|
-      format.html { redirect_to(line_items_url) }
-      format.xml  { head :ok }
+    if current_cart.line_items.empty?
+      format.html {redirect_to store_path, notice: 'Your cart is empty'}
+    else
+      format.html { redirect_to current_cart, notice:'Product removed.' }
+    end
+      format.json  { head :ok }
     end
   end
+
+def decrement
+@cart = current_cart
+@line_item = @cart.decrement_line_item_quantity(params[:id])
+respond_to do |format|
+    if @line_item.save
+    format.html {redirect_to store_path, notice: 'Item successfully updated.'}
+    format.js {@current_item = @line_item}
+    format.json{head :ok}
+    else
+    format.html{render action: "edit"}
+    format.js {@current_item = @line_item}
+    format.json {render json: @line_item.errors, status: :unprocessable_entity}
+    end
+  end
+end
 end
