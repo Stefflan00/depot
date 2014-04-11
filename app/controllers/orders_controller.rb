@@ -32,6 +32,7 @@ class OrdersController < ApplicationController
   # POST /orders.json
 
   def create
+
     @order = Order.new(order_params)
     @order.add_line_items_from_cart(current_cart)
 
@@ -39,6 +40,7 @@ class OrdersController < ApplicationController
       if @order.save
         Cart.destroy(session[:cart_id])
         session[:cart_id] = nil
+        #session[:order_id] = @order.id ### for order download
         format.html { redirect_to store_url, notice: 'Thank you for Order' }
         format.json { render action: 'show', status: :created, location: @order }
       else

@@ -9,7 +9,7 @@ class StoreController < ApplicationController
 
   def index
     increment_counter
-    @products = Product.paginate page: params[:page], per_page:10
+    @products = Product.paginate page: params[:page], per_page:2
     @cart = current_cart
   end
 end

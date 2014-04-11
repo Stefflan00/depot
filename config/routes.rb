@@ -15,7 +15,9 @@ Depot::Application.routes.draw do
   end
 
   resources :products do
+    #get :download, on: :member
     get :who_bought, on: :member
+
   end
 
 
