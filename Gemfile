@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-
+gem 'will_paginate', '>= 3.0.pre'
 gem "therubyracer"
 gem "less-rails"
 gem "twitter-bootstrap-rails"
